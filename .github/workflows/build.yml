@@ -79,8 +79,14 @@ jobs:
       run: |
         mkdir -p output
         ROOTFS=$WORK/chroot_rootfs_xiaomi-yunluo
-        # Пакуем только нужное, исключая смонтированные системные папки
-        sudo tar -czf output/rootfs-xiaomi-yunluo.tar           --exclude=$ROOTFS/proc           --exclude=$ROOTFS/sys           --exclude=$ROOTFS/dev           --exclude=$ROOTFS/var/cache           --exclude=$ROOTFS/mnt           --exclude=$ROOTFS/usr/bin/qemu-aarch64-static           -C $ROOTFS . 2>/dev/null || true
+        # Создаём ext4 образ для fastboot flash userdata
+        SIZE_MB=3000
+        dd if=/dev/zero of=output/pmos-yunluo.img bs=1M count=$SIZE_MB
+        mkfs.ext4 -L pmOS_root output/pmos-yunluo.img
+        mkdir -p /tmp/mnt
+        sudo mount -o loop output/pmos-yunluo.img /tmp/mnt
+        sudo cp -a $ROOTFS/. /tmp/mnt/           --exclude=$ROOTFS/proc           --exclude=$ROOTFS/sys           --exclude=$ROOTFS/dev           --exclude=$ROOTFS/var/cache           --exclude=$ROOTFS/mnt           --exclude=$ROOTFS/usr/bin/qemu-aarch64-static           2>/dev/null || true
+        sudo umount /tmp/mnt
         ls -lh output/
 
     - uses: actions/upload-artifact@v4
