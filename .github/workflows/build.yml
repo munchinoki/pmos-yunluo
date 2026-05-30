@@ -26,7 +26,7 @@ jobs:
     - name: Install pmbootstrap
       run: |
         git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git ~/pmbootstrap
-        python3 ~/pmbootstrap/pmbootstrap.py --version
+        python3 $HOME/pmbootstrap/pmbootstrap.py --version
 
     - name: Clone pmaports
       run: |
@@ -58,7 +58,7 @@ jobs:
 
     - name: Configure pmbootstrap
       run: |
-        PMB="python3 ~/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS"
+        PMB="python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS"
         $PMB config device xiaomi-yunluo
         $PMB config ui console
         $PMB config user user
@@ -67,7 +67,7 @@ jobs:
 
     - name: Build kernel
       run: |
-        python3 ~/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS build linux-xiaomi-yunluo 2>&1 || true
+        python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS build linux-xiaomi-yunluo 2>&1 || true
 
     - name: Show log
       run: |
@@ -75,11 +75,11 @@ jobs:
 
     - name: Build device package
       run: |
-        python3 ~/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS build device-xiaomi-yunluo
+        python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS build device-xiaomi-yunluo
 
     - name: Create rootfs
       run: |
-        python3 ~/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS install --password 1234
+        python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS install --password 1234
 
     - name: Collect images
       run: |
