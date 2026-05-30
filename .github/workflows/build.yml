@@ -62,7 +62,11 @@ jobs:
         echo "8" > $WORK/version
         $PMB build_init
 
-    - name: Build device package (no kernel)
+    - name: Build kernel
+      run: |
+        $PMB --details-to-stdout build linux-xiaomi-yunluo 2>&1 | tail -50 || true
+
+    - name: Build device package
       run: $PMB build device-xiaomi-yunluo
 
     - name: Create rootfs
