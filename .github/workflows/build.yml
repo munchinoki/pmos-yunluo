@@ -89,14 +89,19 @@ jobs:
         sudo umount /tmp/mnt
         ls -lh output/
 
-    - name: Compress image
+    - name: Convert to sparse and compress
       run: |
+        sudo apt-get install -y android-tools-fsutils 2>/dev/null ||         sudo apt-get install -y simg2img 2>/dev/null || true
         cd output
-        gzip -1 pmos-yunluo.img
+        # Конвертируем в sparse format для fastboot
+        img2simg pmos-yunluo.img pmos-yunluo-sparse.img 2>/dev/null ||         /usr/bin/img2simg pmos-yunluo.img pmos-yunluo-sparse.img 2>/dev/null || true
+        ls -lh
+        # Сжимаем sparse образ
+        gzip -1 pmos-yunluo-sparse.img 2>/dev/null || gzip -1 pmos-yunluo.img
         ls -lh
 
     - uses: actions/upload-artifact@v4
       with:
         name: pmos-yunluo-${{ github.run_number }}
-        path: output/pmos-yunluo.img.gz
+        path: output/pmos-yunluo-sparse.img.gz
         retention-days: 14
