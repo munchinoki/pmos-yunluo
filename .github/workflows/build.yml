@@ -85,8 +85,14 @@ jobs:
         sudo umount /tmp/mnt
         ls -lh output/
 
+    - name: Compress image
+      run: |
+        cd output
+        gzip -1 pmos-yunluo.img
+        ls -lh
+
     - uses: actions/upload-artifact@v4
       with:
         name: pmos-yunluo-${{ github.run_number }}
-        path: output/
+        path: output/pmos-yunluo.img.gz
         retention-days: 14
