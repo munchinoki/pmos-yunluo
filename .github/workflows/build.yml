@@ -80,7 +80,7 @@ jobs:
         mkdir -p output
         ROOTFS=$WORK/chroot_rootfs_xiaomi-yunluo
         # Пакуем только нужное, исключая смонтированные системные папки
-        sudo tar -czf output/rootfs-xiaomi-yunluo.tar.gz           --exclude=$ROOTFS/proc           --exclude=$ROOTFS/sys           --exclude=$ROOTFS/dev           --exclude=$ROOTFS/var/cache           --exclude=$ROOTFS/mnt           --exclude=$ROOTFS/usr/bin/qemu-aarch64-static           -C $ROOTFS . 2>/dev/null || true
+        sudo tar -czf output/rootfs-xiaomi-yunluo.tar           --exclude=$ROOTFS/proc           --exclude=$ROOTFS/sys           --exclude=$ROOTFS/dev           --exclude=$ROOTFS/var/cache           --exclude=$ROOTFS/mnt           --exclude=$ROOTFS/usr/bin/qemu-aarch64-static           -C $ROOTFS . 2>/dev/null || true
         ls -lh output/
 
     - uses: actions/upload-artifact@v4
