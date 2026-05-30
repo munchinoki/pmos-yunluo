@@ -8,6 +8,7 @@ on:
 env:
   WORK: /home/runner/pmbootstrap-work
   PMAPORTS: /home/runner/pmaports
+  PMB: python3 /home/runner/pmbootstrap/pmbootstrap.py
 
 jobs:
   build:
@@ -15,8 +16,7 @@ jobs:
     timeout-minutes: 350
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
@@ -25,15 +25,12 @@ jobs:
 
     - name: Install pmbootstrap
       run: |
-        git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git ~/pmbootstrap
-        python3 $HOME/pmbootstrap/pmbootstrap.py --version
+        git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git /home/runner/pmbootstrap
+        python3 /home/runner/pmbootstrap/pmbootstrap.py --version
 
-    - name: Clone pmaports
+    - name: Clone pmaports and copy device packages
       run: |
         git clone https://gitlab.postmarketos.org/postmarketOS/pmaports.git $PMAPORTS
-
-    - name: Copy device packages into pmaports
-      run: |
         mkdir -p $PMAPORTS/device/testing/device-xiaomi-yunluo
         mkdir -p $PMAPORTS/device/linux/linux-xiaomi-yunluo
         cp -r device-xiaomi-yunluo/. $PMAPORTS/device/testing/device-xiaomi-yunluo/
@@ -41,13 +38,7 @@ jobs:
 
     - name: Generate sha512sums
       run: |
-        cd device-xiaomi-yunluo
-        DEVINFO_SHA=$(sha512sum deviceinfo | cut -d' ' -f1)
-        MODULES_SHA=$(sha512sum modules-initfs | cut -d' ' -f1)
-        sed -i "s|SKIP  deviceinfo|$DEVINFO_SHA  deviceinfo|" APKBUILD
-        sed -i "s|SKIP  modules-initfs|$MODULES_SHA  modules-initfs|" APKBUILD
-        cp APKBUILD $PMAPORTS/device/testing/device-xiaomi-yunluo/APKBUILD
-        cd ../linux-xiaomi-yunluo
+        cd linux-xiaomi-yunluo
         wget -q -O kernel-yunluo.tar.gz https://github.com/MiCode/Xiaomi_Kernel_OpenSource/archive/refs/heads/yunluo-s-oss.tar.gz
         KERNEL_SHA=$(sha512sum kernel-yunluo.tar.gz | cut -d' ' -f1)
         CONFIG_SHA=$(sha512sum config-xiaomi-yunluo.aarch64 | cut -d' ' -f1)
@@ -55,43 +46,41 @@ jobs:
         sed -i "s|SKIP  config-xiaomi-yunluo.aarch64|$CONFIG_SHA  config-xiaomi-yunluo.aarch64|" APKBUILD
         cp APKBUILD $PMAPORTS/device/linux/linux-xiaomi-yunluo/APKBUILD
         cp kernel-yunluo.tar.gz $PMAPORTS/device/linux/linux-xiaomi-yunluo/
+        cd ../device-xiaomi-yunluo
+        DEVINFO_SHA=$(sha512sum deviceinfo | cut -d' ' -f1)
+        MODULES_SHA=$(sha512sum modules-initfs | cut -d' ' -f1)
+        sed -i "s|SKIP  deviceinfo|$DEVINFO_SHA  deviceinfo|" APKBUILD
+        sed -i "s|SKIP  modules-initfs|$MODULES_SHA  modules-initfs|" APKBUILD
+        cp APKBUILD $PMAPORTS/device/testing/device-xiaomi-yunluo/APKBUILD
 
-    - name: Configure pmbootstrap
+    - name: Setup pmbootstrap work dir and config
       run: |
-        mkdir -p $HOME/.config $WORK
+        mkdir -p $WORK/cache_git
+        ln -s $PMAPORTS $WORK/cache_git/pmaports
+        mkdir -p $HOME/.config
         printf '[pmbootstrap]\nwork = /home/runner/pmbootstrap-work\naports = /home/runner/pmaports\ndevice = xiaomi-yunluo\nui = console\nuser = user\nhostname = redmipad\nextra_packages = none\n' > $HOME/.config/pmbootstrap_v3.cfg
-        cat $HOME/.config/pmbootstrap_v3.cfg
-
-    - name: Init work folder
-      run: |
-        mkdir -p $WORK
-        printf '[workdir]\nversion = 8\n' > $WORK/workdir.cfg
-        python3 $HOME/pmbootstrap/pmbootstrap.py build_init
+        echo "8" > $WORK/version
+        $PMB build_init
 
     - name: Build kernel
-      run: |
-        python3 $HOME/pmbootstrap/pmbootstrap.py build linux-xiaomi-yunluo 2>&1 || true
+      run: $PMB build linux-xiaomi-yunluo 2>&1 || true
 
-    - name: Show log
-      run: |
-        cat $WORK/log.txt 2>/dev/null | grep -A5 'ERROR\|error:\|fatal:' | head -100 || cat $WORK/log.txt 2>/dev/null | tail -300 || echo "no log"
+    - name: Show log on kernel fail
+      run: cat $WORK/log.txt 2>/dev/null | tail -300 || echo "no log"
 
     - name: Build device package
-      run: |
-        python3 $HOME/pmbootstrap/pmbootstrap.py build device-xiaomi-yunluo
+      run: $PMB build device-xiaomi-yunluo
 
     - name: Create rootfs
-      run: |
-        python3 $HOME/pmbootstrap/pmbootstrap.py install --password 1234
+      run: $PMB install --password 1234
 
-    - name: Collect images
+    - name: Collect and upload images
       run: |
         mkdir -p output
-        find $WORK -name "*.img" -exec cp {} output/ 2>/dev/null || true
+        find $WORK -name "*.img" -exec cp {} output/ \; 2>/dev/null || true
         ls -lh output/
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
         name: pmos-yunluo-${{ github.run_number }}
         path: output/
