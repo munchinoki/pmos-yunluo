@@ -67,7 +67,7 @@ jobs:
 
     - name: Create rootfs
       run: |
-        $PMB install --password 1234 --no-image || true
+        $PMB --details-to-stdout install --password 1234 --no-image 2>&1 | tail -50 || true
         # Export rootfs tar
         $PMB export --odin || true
         ls -lh /tmp/postmarketOS-export/ 2>/dev/null || true
