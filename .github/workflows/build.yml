@@ -67,11 +67,13 @@ jobs:
 
     - name: Create rootfs
       run: |
-        $PMB --details-to-stdout install --password 1234 --no-image 2>&1 | tail -50 || true
-        # Export rootfs tar
-        $PMB export --odin || true
-        ls -lh /tmp/postmarketOS-export/ 2>/dev/null || true
-        find $WORK -name "*.img" -o -name "*.tar" 2>/dev/null | head -20
+        ROOTFS=$WORK/chroot_rootfs_xiaomi-yunluo
+        sudo mkdir -p $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo
+        sudo touch $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo/modules.dep
+        sudo touch $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo/modules.alias
+        sudo touch $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo/modules.devname
+        sudo touch $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo/modules.symbols
+        $PMB --details-to-stdout install --password 1234 --no-image 2>&1 | tail -100 || true
 
     - name: Collect and upload images
       run: |
