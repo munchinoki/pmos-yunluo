@@ -63,7 +63,13 @@ jobs:
         $PMB build_init
 
     - name: Build kernel
-      run: $PMB --details-to-stdout build linux-xiaomi-yunluo 2>&1 || true
+      run: |
+        $PMB --details-to-stdout build linux-xiaomi-yunluo > /tmp/build_out.txt 2>&1 || true
+        # Show last 200 lines where error actually is
+        tail -200 /tmp/build_out.txt
+        # Also check abuild log inside chroot
+        find $WORK/chroot_native -name "*.log" 2>/dev/null | head -5
+        cat $WORK/chroot_native/home/pmos/build/linux-xiaomi-yunluo-*.log 2>/dev/null | tail -100 || true
 
     - name: Show log on kernel fail
       run: |
