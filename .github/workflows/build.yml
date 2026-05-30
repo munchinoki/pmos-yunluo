@@ -58,12 +58,20 @@ jobs:
 
     - name: Configure pmbootstrap
       run: |
-        PMB="python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS"
-        $PMB config device xiaomi-yunluo
-        $PMB config ui console
-        $PMB config user user
-        $PMB config hostname redmipad
-        $PMB config extra_packages none
+        mkdir -p $HOME/.local/var/pmbootstrap
+        cat > $HOME/.config/pmbootstrap.cfg << EOF
+[pmbootstrap]
+work = /home/runner/pmbootstrap-work
+aports = /home/runner/pmaports
+device = xiaomi-yunluo
+ui = console
+user = user
+hostname = redmipad
+extra_packages = none
+mirror_postmarketos = http://mirror.postmarketos.org/postmarketos/
+channels_cfg = https://postmarketos.org/channels.cfg
+is_default_channel = False
+EOF
 
     - name: Build kernel
       run: |
