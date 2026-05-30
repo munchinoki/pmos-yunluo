@@ -44,6 +44,7 @@ build() {
 		ARCH=arm64 \
 		CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
+		KCFLAGS="-w" \
 		Image.gz modules dtbs
 }
 
