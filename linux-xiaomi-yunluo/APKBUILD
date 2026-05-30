@@ -35,6 +35,7 @@ prepare() {
 	make -C "$builddir" ARCH=arm64 yunluo_defconfig
 	echo 'CONFIG_MODULES=y' >> "$builddir/.config"
 	echo 'CONFIG_MODULE_UNLOAD=y' >> "$builddir/.config"
+	echo 'CONFIG_PINCTRL_MTK_V2_DEBUG=n' >> "$builddir/.config"
 	make -C "$builddir" ARCH=arm64 olddefconfig
 }
 
