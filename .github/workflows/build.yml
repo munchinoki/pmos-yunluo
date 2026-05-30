@@ -107,5 +107,5 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: pmos-yunluo-${{ github.run_number }}
-        path: output/pmos-yunluo-sparse.img.gz
+        path: output/pmos-yunluo.img.gz
         retention-days: 14
