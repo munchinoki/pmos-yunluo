@@ -58,7 +58,7 @@ jobs:
 
     - name: Configure pmbootstrap
       run: |
-        printf "\n$PMAPORTS\nedge\nxiaomi\nyunluo\nn\nuser\npipewire\niwd\ndeveloper\nconsole\nn\nn\nnone\n\nredmipad\ny\nn\n" | python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK init || true
+        printf "\n$PMAPORTS\nedge\nxiaomi\nyunluo\nn\nuser\n1\n1\n1\nconsole\nn\nn\nnone\n\nredmipad\ny\nn\n" | python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK init || true
         echo "=== CONFIG ==="
         find $HOME -name "pmbootstrap.cfg" 2>/dev/null | xargs cat || echo "no config"
         find $HOME -name "*.toml" 2>/dev/null | head -5
