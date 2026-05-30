@@ -34,10 +34,15 @@ jobs:
       run: |
         git clone https://gitlab.postmarketos.org/postmarketOS/pmaports.git $PMAPORTS
 
+    - name: Show pmaports structure
+      run: ls $PMAPORTS/device/
+
     - name: Copy device packages into pmaports
       run: |
-        cp -r device-xiaomi-yunluo $PMAPORTS/device/testing/device-xiaomi-yunluo
-        cp -r linux-xiaomi-yunluo $PMAPORTS/device/linux/linux-xiaomi-yunluo
+        mkdir -p $PMAPORTS/device/testing/device-xiaomi-yunluo
+        mkdir -p $PMAPORTS/device/linux/linux-xiaomi-yunluo
+        cp -r device-xiaomi-yunluo/. $PMAPORTS/device/testing/device-xiaomi-yunluo/
+        cp -r linux-xiaomi-yunluo/. $PMAPORTS/device/linux/linux-xiaomi-yunluo/
 
     - name: Download kernel and generate sha512sums
       run: |
