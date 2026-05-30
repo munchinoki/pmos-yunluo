@@ -64,6 +64,8 @@ jobs:
 
     - name: Init work folder
       run: |
+        mkdir -p $WORK
+        printf '[workdir]\nversion = 8\n' > $WORK/workdir.cfg
         python3 $HOME/pmbootstrap/pmbootstrap.py build_init
 
     - name: Build kernel
