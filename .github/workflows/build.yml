@@ -8,8 +8,6 @@ on:
 env:
   WORK: /home/runner/pmbootstrap-work
   PMAPORTS: /home/runner/pmaports
-  DEVICE_CODENAME: yunluo
-  DEVICE_VENDOR: xiaomi
 
 jobs:
   build:
@@ -34,37 +32,59 @@ jobs:
       run: |
         git clone https://gitlab.postmarketos.org/postmarketOS/pmaports.git $PMAPORTS
 
-    - name: Show yunluo packages in pmaports
+    - name: Copy device packages into pmaports
       run: |
-        echo "=== device ==="
-        ls $PMAPORTS/device/testing/ | grep yunluo || echo "not found"
-        echo "=== linux ==="
-        ls $PMAPORTS/device/linux/ | grep yunluo || echo "not found"
+        mkdir -p $PMAPORTS/device/testing/device-xiaomi-yunluo
+        mkdir -p $PMAPORTS/device/linux/linux-xiaomi-yunluo
+        cp -r device-xiaomi-yunluo/. $PMAPORTS/device/testing/device-xiaomi-yunluo/
+        cp -r linux-xiaomi-yunluo/. $PMAPORTS/device/linux/linux-xiaomi-yunluo/
 
-    - name: Init pmbootstrap
+    - name: Generate sha512sums
       run: |
-        printf "$WORK\\n$PMAPORTS\\nedge\\n$DEVICE_VENDOR\\n$DEVICE_CODENAME\\nuser\\npipewire\\niwd\\ndeveloper\\nconsole\\nnever\\nn\\nnone\\nn\\nen_US\\nredmipad\\ny\\nn\\n" | python3 ~/pmbootstrap/pmbootstrap.py init
+        cd device-xiaomi-yunluo
+        DEVINFO_SHA=$(sha512sum deviceinfo | cut -d' ' -f1)
+        MODULES_SHA=$(sha512sum modules-initfs | cut -d' ' -f1)
+        sed -i "s|SKIP  deviceinfo|$DEVINFO_SHA  deviceinfo|" APKBUILD
+        sed -i "s|SKIP  modules-initfs|$MODULES_SHA  modules-initfs|" APKBUILD
+        cp APKBUILD $PMAPORTS/device/testing/device-xiaomi-yunluo/APKBUILD
+        cd ../linux-xiaomi-yunluo
+        wget -q -O kernel-yunluo.tar.gz https://github.com/MiCode/Xiaomi_Kernel_OpenSource/archive/refs/heads/yunluo-s-oss.tar.gz
+        KERNEL_SHA=$(sha512sum kernel-yunluo.tar.gz | cut -d' ' -f1)
+        CONFIG_SHA=$(sha512sum config-xiaomi-yunluo.aarch64 | cut -d' ' -f1)
+        sed -i "s|SKIP  kernel-yunluo.tar.gz|$KERNEL_SHA  kernel-yunluo.tar.gz|" APKBUILD
+        sed -i "s|SKIP  config-xiaomi-yunluo.aarch64|$CONFIG_SHA  config-xiaomi-yunluo.aarch64|" APKBUILD
+        cp APKBUILD $PMAPORTS/device/linux/linux-xiaomi-yunluo/APKBUILD
+        cp kernel-yunluo.tar.gz $PMAPORTS/device/linux/linux-xiaomi-yunluo/
+
+    - name: Configure pmbootstrap
+      run: |
+        PMB="python3 ~/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS"
+        $PMB config device xiaomi-yunluo
+        $PMB config ui console
+        $PMB config user user
+        $PMB config hostname redmipad
+        $PMB config extra_packages none
 
     - name: Build kernel
       run: |
-        python3 ~/pmbootstrap/pmbootstrap.py build linux-xiaomi-yunluo 2>&1 || true
+        python3 ~/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS build linux-xiaomi-yunluo 2>&1 || true
 
-    - name: Show pmbootstrap log
+    - name: Show log
       run: |
-        cat $WORK/log.txt 2>/dev/null | tail -100 || echo "log not found"
+        cat $WORK/log.txt 2>/dev/null | tail -80 || echo "no log"
 
     - name: Build device package
       run: |
-        python3 ~/pmbootstrap/pmbootstrap.py build device-xiaomi-yunluo
+        python3 ~/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS build device-xiaomi-yunluo
 
     - name: Create rootfs
       run: |
-        python3 ~/pmbootstrap/pmbootstrap.py install --password 1234
+        python3 ~/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS install --password 1234
 
     - name: Collect images
       run: |
         mkdir -p output
-        find $WORK -name "*.img" -exec cp {} output/ \; 2>/dev/null || true
+        find $WORK -name "*.img" -exec cp {} output/ 2>/dev/null || true
         ls -lh output/
 
     - name: Upload artifacts
