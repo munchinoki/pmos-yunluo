@@ -62,6 +62,10 @@ jobs:
         printf '[pmbootstrap]\nwork = /home/runner/pmbootstrap-work\naports = /home/runner/pmaports\ndevice = xiaomi-yunluo\nui = console\nuser = user\nhostname = redmipad\nextra_packages = none\n' > $HOME/.config/pmbootstrap_v3.cfg
         cat $HOME/.config/pmbootstrap_v3.cfg
 
+    - name: Init work folder
+      run: |
+        python3 $HOME/pmbootstrap/pmbootstrap.py build_init
+
     - name: Build kernel
       run: |
         python3 $HOME/pmbootstrap/pmbootstrap.py build linux-xiaomi-yunluo 2>&1 || true
