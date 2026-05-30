@@ -57,7 +57,10 @@ jobs:
         cp kernel-yunluo.tar.gz $PMAPORTS/device/linux/linux-xiaomi-yunluo/
 
     - name: Configure pmbootstrap
-      run: python3 write_config.py
+      run: |
+        printf "\n\nedge\nxiaomi\nyunluo\nn\nuser\n1\n1\n1\nconsole\nn\nn\nnone\n\nredmipad\ny\nn\n" | python3 $HOME/pmbootstrap/pmbootstrap.py init || true
+        echo "=== CONFIG FILE ==="
+        cat $HOME/.config/pmbootstrap.cfg 2>/dev/null || find $HOME -name "pmbootstrap.cfg" 2>/dev/null | xargs cat
 
     - name: Build kernel
       run: |
