@@ -81,7 +81,11 @@ jobs:
         mkfs.ext4 -L pmOS_root output/pmos-yunluo.img
         mkdir -p /tmp/mnt
         sudo mount -o loop output/pmos-yunluo.img /tmp/mnt
-        sudo rsync -a --quiet           --exclude=/proc           --exclude=/sys           --exclude=/dev           --exclude=/var/cache           --exclude=/mnt           --exclude=/usr/bin/qemu-aarch64-static           $ROOTFS/ /tmp/mnt/
+        echo "=== ROOTFS contents ==="
+        ls -la $ROOTFS/
+        echo "=== Size ==="
+        du -sh $ROOTFS/ 2>/dev/null || true
+        sudo rsync -a           --exclude=/proc           --exclude=/sys           --exclude=/dev           --exclude=/var/cache           --exclude=/mnt           --exclude=/usr/bin/qemu-aarch64-static           $ROOTFS/ /tmp/mnt/
         sudo umount /tmp/mnt
         ls -lh output/
 
