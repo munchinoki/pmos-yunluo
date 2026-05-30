@@ -8,7 +8,7 @@ pkgrel=0
 url="https://github.com/munchinoki/pmos-yunluo"
 arch="aarch64"
 license="MIT"
-depends="postmarketos-base linux-xiaomi-yunluo"
+depends="postmarketos-base"
 makedepends="devicepkg-dev"
 source="deviceinfo modules-initfs"
 
