@@ -67,13 +67,9 @@ jobs:
 
     - name: Create rootfs
       run: |
-        ROOTFS=$WORK/chroot_rootfs_xiaomi-yunluo
-        sudo mkdir -p $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo
-        sudo touch $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo/modules.dep
-        sudo touch $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo/modules.alias
-        sudo touch $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo/modules.devname
-        sudo touch $ROOTFS/lib/modules/5.10.198-xiaomi-yunluo/modules.symbols
-        $PMB --details-to-stdout install --password 1234 --no-image 2>&1 | tail -100 || true
+        $PMB chroot -r -- apk update
+        $PMB chroot -r -- apk add postmarketos-base device-xiaomi-yunluo postmarketos-ui-console openssh
+        $PMB chroot -r -- sh -c 'adduser -D -s /bin/sh user; echo "user:1234" | chpasswd'
 
     - name: Collect and upload images
       run: |
