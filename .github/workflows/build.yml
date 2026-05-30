@@ -58,14 +58,13 @@ jobs:
 
     - name: Configure pmbootstrap
       run: |
-        printf "\n$PMAPORTS\nedge\nxiaomi\nyunluo\nn\nuser\npulseaudio\nwpa_supplicant\ndeveloper\nconsole\nn\nn\nnone\n\nredmipad\ny\nn\n" | python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK init || true
-        echo "=== CONFIG ==="
-        find $HOME -name "pmbootstrap.cfg" 2>/dev/null | xargs cat || echo "no config"
-        find $HOME -name "*.toml" 2>/dev/null | head -5
+        mkdir -p $HOME/.config $WORK
+        printf '[pmbootstrap]\nwork = /home/runner/pmbootstrap-work\naports = /home/runner/pmaports\ndevice = xiaomi-yunluo\nui = console\nuser = user\nhostname = redmipad\nextra_packages = none\n' > $HOME/.config/pmbootstrap_v3.cfg
+        cat $HOME/.config/pmbootstrap_v3.cfg
 
     - name: Build kernel
       run: |
-        python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS build linux-xiaomi-yunluo 2>&1 || true
+        python3 $HOME/pmbootstrap/pmbootstrap.py build linux-xiaomi-yunluo 2>&1 || true
 
     - name: Show log
       run: |
@@ -73,11 +72,11 @@ jobs:
 
     - name: Build device package
       run: |
-        python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS build device-xiaomi-yunluo
+        python3 $HOME/pmbootstrap/pmbootstrap.py build device-xiaomi-yunluo
 
     - name: Create rootfs
       run: |
-        python3 $HOME/pmbootstrap/pmbootstrap.py --work $WORK --aports $PMAPORTS install --password 1234
+        python3 $HOME/pmbootstrap/pmbootstrap.py install --password 1234
 
     - name: Collect images
       run: |
