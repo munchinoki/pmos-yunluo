@@ -62,22 +62,7 @@ jobs:
         echo "8" > $WORK/version
         $PMB build_init
 
-    - name: Build kernel
-      run: |
-        $PMB --details-to-stdout build linux-xiaomi-yunluo > /tmp/build_out.txt 2>&1 || true
-        grep -E "error:|ERROR|fatal:|warning: unused" /tmp/build_out.txt | tail -50
-        tail -50 /tmp/build_out.txt
-
-    - name: Show log on kernel fail
-      run: |
-        echo "=== pmbootstrap log ==="
-        cat $WORK/log.txt 2>/dev/null | tail -500 || echo "no log"
-        echo "=== abuild log ==="
-        find $WORK -name "*.log" | xargs cat 2>/dev/null | tail -100 || true
-        echo "=== build dir ==="
-        find $WORK/chroot_native/home/pmos/build -name "*.log" 2>/dev/null | xargs cat | tail -200 || true
-
-    - name: Build device package
+    - name: Build device package (no kernel)
       run: $PMB build device-xiaomi-yunluo
 
     - name: Create rootfs
