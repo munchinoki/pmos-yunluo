@@ -64,7 +64,7 @@ jobs:
 
     - name: Build kernel
       run: |
-        $PMB --details-to-stdout build linux-xiaomi-yunluo 2>&1 | tail -50 || true
+        $PMB --details-to-stdout build linux-xiaomi-yunluo 2>&1 | tail -100
 
     - name: Build device package
       run: $PMB build device-xiaomi-yunluo

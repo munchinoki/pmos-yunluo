@@ -7674,3 +7674,4 @@ CONFIG_CC_HAS_SANCOV_TRACE_PC=y
 # CONFIG_MEMTEST is not set
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
+CONFIG_PINCTRL_MTK_V2_DEBUG=n
