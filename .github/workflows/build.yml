@@ -66,7 +66,13 @@ jobs:
       run: $PMB build linux-xiaomi-yunluo 2>&1 || true
 
     - name: Show log on kernel fail
-      run: cat $WORK/log.txt 2>/dev/null | tail -300 || echo "no log"
+      run: |
+        echo "=== pmbootstrap log ==="
+        cat $WORK/log.txt 2>/dev/null | tail -500 || echo "no log"
+        echo "=== abuild log ==="
+        find $WORK -name "*.log" | xargs cat 2>/dev/null | tail -100 || true
+        echo "=== build dir ==="
+        find $WORK/chroot_native/home/pmos/build -name "*.log" 2>/dev/null | xargs cat | tail -200 || true
 
     - name: Build device package
       run: $PMB build device-xiaomi-yunluo
