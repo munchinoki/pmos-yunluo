@@ -1,0 +1,23 @@
+name: Debug pmbootstrap config format
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Install pmbootstrap
+      run: |
+        git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git $HOME/pmbootstrap
+
+    - name: Run init with qemu (always works) and dump config
+      run: |
+        printf "\n\nedge\nqemu\namd64\nuser\nconsole\nn\nn\nnone\n\ntest\ny\nn\n" \
+          | python3 $HOME/pmbootstrap/pmbootstrap.py init || true
+        echo "=== FILES IN .config ==="
+        ls -la $HOME/.config/
+        echo "=== ALL pmbootstrap configs ==="
+        find $HOME -name "*pmbootstrap*" 2>/dev/null
+        echo "=== CONFIG CONTENT ==="
+        find $HOME -name "*pmbootstrap*cfg*" -exec cat {} \; 2>/dev/null
