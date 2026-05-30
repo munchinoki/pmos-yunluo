@@ -72,7 +72,11 @@ jobs:
 
     - name: Build kernel
       run: |
-        python3 ~/pmbootstrap/pmbootstrap.py build linux-xiaomi-yunluo
+        python3 ~/pmbootstrap/pmbootstrap.py build linux-xiaomi-yunluo 2>&1 || true
+
+    - name: Show pmbootstrap log
+      run: |
+        cat /home/runner/pmbootstrap-work/log.txt || echo "log not found" 
 
     - name: Build device package
       run: |
