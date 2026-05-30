@@ -25,7 +25,7 @@ jobs:
         sudo apt-get update -qq
         sudo apt-get install -y git python3 wget openssl bison flex bc libssl-dev
 
-    - name: Install pmbootstrap from git
+    - name: Install pmbootstrap
       run: |
         git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git ~/pmbootstrap
         python3 ~/pmbootstrap/pmbootstrap.py --version
@@ -34,41 +34,16 @@ jobs:
       run: |
         git clone https://gitlab.postmarketos.org/postmarketOS/pmaports.git $PMAPORTS
 
-    - name: Show pmaports structure
-      run: ls $PMAPORTS/device/
-
-    - name: Copy device packages into pmaports
+    - name: Show yunluo packages in pmaports
       run: |
-        mkdir -p $PMAPORTS/device/testing/device-xiaomi-yunluo
-        mkdir -p $PMAPORTS/device/linux/linux-xiaomi-yunluo
-        cp -r device-xiaomi-yunluo/. $PMAPORTS/device/testing/device-xiaomi-yunluo/
-        cp -r linux-xiaomi-yunluo/. $PMAPORTS/device/linux/linux-xiaomi-yunluo/
-
-    - name: Download kernel and generate sha512sums
-      run: |
-        cd linux-xiaomi-yunluo
-        wget -q -O kernel-yunluo.tar.gz \
-          https://github.com/MiCode/Xiaomi_Kernel_OpenSource/archive/refs/heads/yunluo-s-oss.tar.gz
-        KERNEL_SHA=$(sha512sum kernel-yunluo.tar.gz | cut -d' ' -f1)
-        CONFIG_SHA=$(sha512sum config-xiaomi-yunluo.aarch64 | cut -d' ' -f1)
-        sed -i "s|SKIP  kernel-yunluo.tar.gz|$KERNEL_SHA  kernel-yunluo.tar.gz|" APKBUILD
-        sed -i "s|SKIP  config-xiaomi-yunluo.aarch64|$CONFIG_SHA  config-xiaomi-yunluo.aarch64|" APKBUILD
-        cp APKBUILD $PMAPORTS/device/linux/linux-xiaomi-yunluo/APKBUILD
-        cp kernel-yunluo.tar.gz $PMAPORTS/device/linux/linux-xiaomi-yunluo/
-
-    - name: Generate sha512sums for device package
-      run: |
-        cd device-xiaomi-yunluo
-        DEVINFO_SHA=$(sha512sum deviceinfo | cut -d' ' -f1)
-        MODULES_SHA=$(sha512sum modules-initfs | cut -d' ' -f1)
-        sed -i "s|SKIP  deviceinfo|$DEVINFO_SHA  deviceinfo|" APKBUILD
-        sed -i "s|SKIP  modules-initfs|$MODULES_SHA  modules-initfs|" APKBUILD
-        cp APKBUILD $PMAPORTS/device/testing/device-xiaomi-yunluo/APKBUILD
+        echo "=== device ==="
+        ls $PMAPORTS/device/testing/ | grep yunluo || echo "not found"
+        echo "=== linux ==="
+        ls $PMAPORTS/device/linux/ | grep yunluo || echo "not found"
 
     - name: Init pmbootstrap
       run: |
-        printf "$WORK\n$PMAPORTS\nedge\n$DEVICE_VENDOR\n$DEVICE_CODENAME\nuser\npipewire\niwd\ndeveloper\nconsole\nnever\nn\nnone\nn\nen_US\nredmipad\ny\nn\n" \
-          | python3 ~/pmbootstrap/pmbootstrap.py init
+        printf "$WORK\\n$PMAPORTS\\nedge\\n$DEVICE_VENDOR\\n$DEVICE_CODENAME\\nuser\\npipewire\\niwd\\ndeveloper\\nconsole\\nnever\\nn\\nnone\\nn\\nen_US\\nredmipad\\ny\\nn\\n" | python3 ~/pmbootstrap/pmbootstrap.py init
 
     - name: Build kernel
       run: |
@@ -76,7 +51,7 @@ jobs:
 
     - name: Show pmbootstrap log
       run: |
-        cat /home/runner/pmbootstrap-work/log.txt || echo "log not found" 
+        cat $WORK/log.txt 2>/dev/null | tail -100 || echo "log not found"
 
     - name: Build device package
       run: |
