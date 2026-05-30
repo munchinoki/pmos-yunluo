@@ -33,6 +33,7 @@ builddir="$srcdir/$_kernelname"
 prepare() {
 	default_prepare
 	cp "$srcdir/config-xiaomi-yunluo.aarch64" "$builddir/.config"
+	make -C "$builddir" ARCH=arm64 olddefconfig
 }
 
 build() {
