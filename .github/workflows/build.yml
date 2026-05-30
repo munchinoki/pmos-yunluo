@@ -63,7 +63,7 @@ jobs:
         $PMB build_init
 
     - name: Build kernel
-      run: $PMB build linux-xiaomi-yunluo 2>&1 || true
+      run: $PMB --details-to-stdout build linux-xiaomi-yunluo 2>&1 || true
 
     - name: Show log on kernel fail
       run: |
