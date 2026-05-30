@@ -1,0 +1,54 @@
+# Maintainer: munchinoki
+
+pkgname="linux-xiaomi-yunluo"
+pkgver=5.10.0
+pkgrel=0
+pkgdesc="Redmi Pad kernel downstream MediaTek Helio G99"
+arch="aarch64"
+url="https://github.com/MiCode/Xiaomi_Kernel_OpenSource"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	openssl-dev
+	perl
+	gmp-dev
+	mpc1-dev
+	mpfr-dev
+	elfutils-dev
+	zstd
+"
+_kernelname="Xiaomi_Kernel_OpenSource-yunluo-s-oss"
+source="
+	kernel-yunluo.tar.gz::https://github.com/MiCode/Xiaomi_Kernel_OpenSource/archive/refs/heads/yunluo-s-oss.tar.gz
+	config-xiaomi-yunluo.aarch64
+"
+builddir="$srcdir/$_kernelname"
+
+prepare() {
+	default_prepare
+	cp "$srcdir/config-xiaomi-yunluo.aarch64" "$builddir/.config"
+}
+
+build() {
+	unset LDFLAGS
+	make -C "$builddir" \
+		ARCH=arm64 \
+		CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-postmarketOS" \
+		Image.gz modules dtbs
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" arm64 "$_kernelname"
+}
+
+sha512sums="
+SKIP  kernel-yunluo.tar.gz
+SKIP  config-xiaomi-yunluo.aarch64
+"

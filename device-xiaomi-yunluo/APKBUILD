@@ -1,0 +1,26 @@
+# Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: munchinoki
+
+pkgname="device-xiaomi-yunluo"
+pkgdesc="Redmi Pad"
+pkgver=1
+pkgrel=0
+url="https://github.com/munchinoki/pmos-yunluo"
+arch="aarch64"
+license="MIT"
+depends="postmarketos-base linux-xiaomi-yunluo"
+makedepends="devicepkg-dev"
+source="deviceinfo modules-initfs"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+SKIP  deviceinfo
+SKIP  modules-initfs
+"
