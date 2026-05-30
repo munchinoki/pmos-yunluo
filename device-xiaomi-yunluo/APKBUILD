@@ -1,5 +1,5 @@
 # Reference: <https://postmarketos.org/devicepkg>
-# Maintainer: munchinoki
+# Maintainer: munchinoki <munchinoki@users.noreply.github.com>
 
 pkgname="device-xiaomi-yunluo"
 pkgdesc="Redmi Pad"
