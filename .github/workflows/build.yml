@@ -69,7 +69,7 @@ jobs:
 
     - name: Show log
       run: |
-        cat $WORK/log.txt 2>/dev/null | tail -80 || echo "no log"
+        cat $WORK/log.txt 2>/dev/null | tail -200 || echo "no log"
 
     - name: Build device package
       run: |
