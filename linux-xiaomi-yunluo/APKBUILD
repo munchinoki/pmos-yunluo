@@ -33,6 +33,9 @@ builddir="$srcdir/$_kernelname"
 prepare() {
 	default_prepare
 	make -C "$builddir" ARCH=arm64 yunluo_defconfig
+	echo 'CONFIG_MODULES=y' >> "$builddir/.config"
+	echo 'CONFIG_MODULE_UNLOAD=y' >> "$builddir/.config"
+	make -C "$builddir" ARCH=arm64 olddefconfig
 }
 
 build() {
