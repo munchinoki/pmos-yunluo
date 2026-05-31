@@ -1,0 +1,6 @@
+--- a/drivers/pinctrl/mediatek/Makefile
++++ b/drivers/pinctrl/mediatek/Makefile
+@@ -1,5 +1,4 @@
+ obj-$(CONFIG_PINCTRL_MTK_PARIS)	+= pinctrl-mtk-common-v2.o
+-obj-$(CONFIG_PINCTRL_MTK_PARIS)	+= pinctrl-mtk-common-v2_debug.o
+ obj-$(CONFIG_PINCTRL_MTK_PARIS)	+= pinctrl-paris.o

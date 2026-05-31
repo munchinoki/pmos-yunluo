@@ -44,6 +44,8 @@ jobs:
         CONFIG_SHA=$(sha512sum config-xiaomi-yunluo.aarch64 | cut -d' ' -f1)
         sed -i "s|SKIP  kernel-yunluo.tar.gz|$KERNEL_SHA  kernel-yunluo.tar.gz|" APKBUILD
         sed -i "s|SKIP  config-xiaomi-yunluo.aarch64|$CONFIG_SHA  config-xiaomi-yunluo.aarch64|" APKBUILD
+        PATCH_SHA=$(sha512sum fix-pinctrl-debug.patch | cut -d' ' -f1)
+        echo "$PATCH_SHA  fix-pinctrl-debug.patch" >> APKBUILD
         cp APKBUILD $PMAPORTS/device/linux/linux-xiaomi-yunluo/APKBUILD
         cp kernel-yunluo.tar.gz $PMAPORTS/device/linux/linux-xiaomi-yunluo/
         cd ../device-xiaomi-yunluo

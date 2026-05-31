@@ -27,6 +27,7 @@ _kernelname="Xiaomi_Kernel_OpenSource-yunluo-s-oss"
 source="
 	kernel-yunluo.tar.gz::https://github.com/MiCode/Xiaomi_Kernel_OpenSource/archive/refs/heads/yunluo-s-oss.tar.gz
 	config-xiaomi-yunluo.aarch64
+	fix-pinctrl-debug.patch
 "
 builddir="$srcdir/$_kernelname"
 
