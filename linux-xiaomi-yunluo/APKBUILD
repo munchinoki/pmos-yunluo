@@ -27,12 +27,12 @@ _kernelname="Xiaomi_Kernel_OpenSource-yunluo-s-oss"
 source="
 	kernel-yunluo.tar.gz::https://github.com/MiCode/Xiaomi_Kernel_OpenSource/archive/refs/heads/yunluo-s-oss.tar.gz
 	config-xiaomi-yunluo.aarch64
-	fix-pinctrl-debug.patch
 "
 builddir="$srcdir/$_kernelname"
 
 prepare() {
 	default_prepare
+	sed -i "/pinctrl-mtk-common-v2_debug/d" "$builddir/drivers/pinctrl/mediatek/Makefile"
 	make -C "$builddir" ARCH=arm64 yunluo_defconfig
 	echo 'CONFIG_MODULES=y' >> "$builddir/.config"
 	echo 'CONFIG_MODULE_UNLOAD=y' >> "$builddir/.config"
@@ -57,5 +57,4 @@ package() {
 sha512sums="
 SKIP  kernel-yunluo.tar.gz
 SKIP  config-xiaomi-yunluo.aarch64
-6b6495793667044c78bfa98a4ec129d5484623c22e8f9a38d596c46afb908408608a1bfa2c3835dd2e800105915d7d62f0cdab3104ce9e662176cc2ff3fc8051  fix-pinctrl-debug.patch
 "
