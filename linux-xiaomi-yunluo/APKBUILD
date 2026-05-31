@@ -57,4 +57,5 @@ package() {
 sha512sums="
 SKIP  kernel-yunluo.tar.gz
 SKIP  config-xiaomi-yunluo.aarch64
+6b6495793667044c78bfa98a4ec129d5484623c22e8f9a38d596c46afb908408608a1bfa2c3835dd2e800105915d7d62f0cdab3104ce9e662176cc2ff3fc8051  fix-pinctrl-debug.patch
 "
